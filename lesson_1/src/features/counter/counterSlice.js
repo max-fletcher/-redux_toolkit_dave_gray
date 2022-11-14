@@ -1,5 +1,6 @@
 // A redux state objects is split into multiple state objects. Hence, a slice is a set of reducer logic, state and actions for each feature in the app.
-// E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have their own slices.
+// E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
+// their own slices.
 
 import { createSlice } from "@reduxjs/toolkit"
 
