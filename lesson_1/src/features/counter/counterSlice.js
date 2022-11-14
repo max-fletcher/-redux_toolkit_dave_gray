@@ -23,6 +23,9 @@ export const counterSlice = createSlice({
       },
       reset: (state)=>{
          state.count = 0
+      },
+      incrementByAmount: (state, action)=>{
+         state.count += action.payload
       }
    }
 })
@@ -30,6 +33,6 @@ export const counterSlice = createSlice({
 // we need to export BOTH the reducer AND the actions to use global store properly.
 
 // exporting the actions for this slice(mandatory)
-export const { increment, decrement } = counterSlice.actions
+export const { increment, decrement, reset, incrementByAmount } = counterSlice.actions
 // exporting the reducer(mandatory)
 export default counterSlice.reducer
