@@ -5,7 +5,7 @@ import React from 'react'
 
 const PostList = () => {
    // const posts = useSelector((state) => state.posts)  //import reducer from store
-   const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a state from the slice(in this case
+   const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a named state from the slice(in this case
    // 'postsSlice' -> export const selectAllPosts = (state) => state.posts)
 
    const renderedPosts = posts.map((post) => {

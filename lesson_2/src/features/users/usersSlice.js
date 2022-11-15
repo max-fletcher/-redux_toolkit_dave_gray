@@ -1,42 +1,25 @@
 // A redux state objects is split into multiple state objects. Hence, a slice is a set of reducer logic, state and actions for each feature in the app.
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-// set initial values
 const initialState = [
-   {id: '1', title: 'Learning Redux Toolkit', content: 'Heard good things'},
-   {id: '2', title: 'Slices...', content: "I love pizzas"},
+   {id: '1', name: 'Dave Gray'},
+   {id: '2', name: 'John Simms'},
+   {id: '3', name: 'Matt Hoffman'},
 ]
 
 // contains reducer. 1st params in the name(used to call actions for this slice using the syntax state.?name?.action. In this case, an example is
 // state.counter.increment. However, remember that we can choose to not call it in a component and instead export it from the slice itself with a
 // designated name. See below), 2nd param is the initial state data(may be number, string, object etc but object is preferred),
 // and 3rd param are the actions(see below for more info). Don't forget to export it(mandatory)
-const postsSlice = createSlice({
-   name: 'posts',
+const usersSlice = createSlice({
+   name: 'users',
    initialState,
    reducers: {
-      // postAdded(state, action){
-      //    state.push(action.payload)
-      // }
-      // This is a replacement for the 3 lines above. It is how you abstract the logic from inside a component into redux. The 'reducer' callback(where the state is 
+      // This is a replacement for the lines above. It is how you abstract the logic from inside a component into redux. The 'reducer' callback(where the state is 
       // persisted to store store) will run after 'prepare' callback(where the data is pre-processed before storing).
-      postAdded: {
-         reducer(state, action){
-            state.push(action.payload)
-         },
-         prepare(title, content, userId){
-            return{
-               payload: {
-                  id: nanoid(),
-                  userId,
-                  title,
-                  content,
-               }
-            }
-         }
-      }
+      
    }
 })
 
@@ -47,9 +30,9 @@ const postsSlice = createSlice({
 
 // This is to ascertain that 'posts' inside 'state' will be exported. So if the structure of this slice ever changes, we need to change the export
 // here and everywhere we use this, will grab the right data
-export const selectAllPosts = (state) => state.posts
+export const selectAllUsers = (state) => state.users
 
-export const { postAdded } = postsSlice.actions
+// export const { postAdded } = postsSlice.actions
 
 // exporting the reducer(mandatory)
-export default postsSlice.reducer
+export default usersSlice.reducer

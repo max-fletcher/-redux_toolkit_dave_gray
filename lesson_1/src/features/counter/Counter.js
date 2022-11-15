@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-// importing useSelector and useDispatch Hooks. useSelector is used to link up a reducer state with a cariable in this component. useDispatch is used to dispatch 
+// importing useSelector and useDispatch Hooks. useSelector is used to link up a reducer state with a variable in this component. useDispatch is used to dispatch 
 // actions from a store slice.
 import { useSelector, useDispatch } from 'react-redux'
 // importing actions from counterSlice
@@ -15,10 +15,10 @@ const Counter = () => {
       dispatch(reset())  // using the 'reset' function from 'counter' to set value to 0
    }
 
-   // instead of setting a count state, we are using useSelector to define a count state from the reducer/store. The 'counter' in state,counter.count comes from the
-   // store where we are defining "counter: counterReducer".
+   // instead of setting a count state, we are using useSelector to define a count state from the reducer/store. The 'counter' in state,counter.count comes from 
+   // 'name' property in the counterSlice of counterSlice.js(will always grab the name defined inside the slice).
    const count = useSelector((state) => state.counter.count)
-   const dispatch = useDispatch() // importing the useDispatch so we can dispatch an action from a store slice
+   const dispatch = useDispatch() // importing and storing dispatch hook in a varaible so we can use it to fire actions that are defined in the slices
    return (
       <section>
          <p>{count}</p>

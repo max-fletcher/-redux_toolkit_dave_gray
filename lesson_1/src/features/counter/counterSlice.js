@@ -9,8 +9,10 @@ const initialState = {
    count: 0
 }
 
-// contains reducer. 1st params in the name, 2nd param is the initial state data(may be number, string, object etc but object is preferred), and 3rd param are the 
-// actions(see below for more info). Don't forget to export it(mandatory)
+// contains reducer. 1st params in the name(used to call actions for this slice using the syntax state.?name?.action. In this case, an example is
+// state.counter.increment. However, remember that we can choose to not call it in a component and instead export it from the slice itself with a
+// designated name. See lesson_2 for an example), 2nd param is the initial state data(may be number, string, object etc but object is preferred),
+// and 3rd param are the actions(see below for more info). Don't forget to export it(mandatory)
 export const counterSlice = createSlice({
    name: 'counter',
    initialState,
