@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectAllPosts } from "./postsSlice";
-
-import React from 'react'
+import PostAuthor from "./PostAuthor";
 
 const PostList = () => {
    // const posts = useSelector((state) => state.posts)  //import reducer from store
@@ -9,12 +8,16 @@ const PostList = () => {
    // 'postsSlice' -> export const selectAllPosts = (state) => state.posts)
 
    const renderedPosts = posts.map((post) => {
+
       // This renders JSX. Instead of writing this directly in the return of this component, you can abstract it away like this into a separate
       //  function and call it inside the return function of a component
       return (
          <article key={post.id}>
             <h3>{post.title}</h3>
             <p>{post.content.substring(0,100)}</p>
+            <p className="postCredit">
+               <PostAuthor userId={post.userId} />
+            </p>
          </article>
       )
    })
