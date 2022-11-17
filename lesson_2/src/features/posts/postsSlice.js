@@ -2,11 +2,36 @@
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
 import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { sub } from 'date-fns'
 
 // set initial values
 const initialState = [
-   {id: '1', title: 'Learning Redux Toolkit', content: 'Heard good things'},
-   {id: '2', title: 'Slices...', content: "I love pizzas"},
+   {
+      id: '1',
+      title: 'Learning Redux Toolkit',
+      content: 'Heard good things',
+      date: sub(new Date(), {minutes: 10}).toISOString(),
+      reactions: {
+         thumbsUp : 0,
+         wow : 0,
+         heart : 0,
+         rocket : 0,
+         coffee : 0
+      }
+   },
+   {
+      id: '2',
+      title: 'Slices...',
+      content: "I love pizzas",
+      date: sub(new Date(), {minutes: 20}).toISOString(),
+      reactions: {
+         thumbsUp : 0,
+         wow : 0,
+         heart : 0,
+         rocket : 0,
+         coffee : 0
+      }
+   },
 ]
 
 // contains reducer. 1st params in the name(used to call actions for this slice using the syntax state.?name?.action. In this case, an example is
@@ -33,10 +58,38 @@ const postsSlice = createSlice({
                   userId,
                   title,
                   content,
+                  date: new Date().toISOString(),
+                  reactions: {
+                     thumbsUp : 0,
+                     wow : 0,
+                     heart : 0,
+                     rocket : 0,
+                     coffee : 0
+                  }
                }
             }
          }
+      },
+
+      // reactionAdded(state, action) {
+      //    const { postId, reaction } = action.payload
+      //    const existingPost = state.find((post) => post.id === postId)
+      //    if(existingPost){
+      //       existingPost.reactions[reaction]++
+      //    }
+      // }
+
+      // A reducer action can also be declared using the syntax above. Though its prefereable to stick to the convention below.
+      reactionAdded: {
+         reducer(state, action){
+            const { postId, reaction } = action.payload
+            const existingPost = state.find((post) => post.id === postId)
+            if(existingPost){
+               existingPost.reactions[reaction]++
+            }
+         }
       }
+
    }
 })
 
@@ -49,7 +102,7 @@ const postsSlice = createSlice({
 // here and everywhere we use this, will grab the right data
 export const selectAllPosts = (state) => state.posts
 
-export const { postAdded } = postsSlice.actions
+export const { postAdded, reactionAdded } = postsSlice.actions
 
 // exporting the reducer(mandatory)
 export default postsSlice.reducer
