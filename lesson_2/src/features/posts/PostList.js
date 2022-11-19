@@ -6,10 +6,11 @@ import ReactionButtons from "./ReactionButtons";
 
 const PostList = () => {
    // const posts = useSelector((state) => state.posts)  //import reducer from store
-   const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a named state from the slice(in this case
-   // 'postsSlice' -> export const selectAllPosts = (state) => state.posts)
+   const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a named state from the slice(in this
+   // case' postsSlice' -> export const selectAllPosts = (state) => state.posts)
 
-   // The slice method is needed since it returns a new array, else, it doesn't work
+   // The slice method is needed since it returns a new array, else, it doesn't work. Its because sort() will mutate the data but redux data is 
+   // immutable by nature. Since slice() returns a shallow copy, it will only return a reference to all array elements inside the JSON but sorted.
    const orderedPosts = posts.slice().sort((a,b) => b.date.localeCompare(a.date))
 
    // console.log(orderedPosts);
