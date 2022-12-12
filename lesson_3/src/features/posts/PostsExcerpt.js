@@ -4,7 +4,7 @@ import ReactionButtons from "./ReactionButtons";
 
 const PostsExcerpt = ({post}) => {
 
-   console.log(post, 'excerpt');
+   // console.log(post, 'excerpt');
 
    return (
       <article>

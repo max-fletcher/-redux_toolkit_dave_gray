@@ -5,6 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './app/store';
 import { Provider } from 'react-redux'
+import { fetchUsers } from './features/users/usersSlice'; // importing fetchUsers from usersSlice
+
+// triggering the function so that users are fetched when the app loads/mounts. This is a substitute for using the useDispatch()
+// hook inside a component's useEffect.
+store.dispatch(fetchUsers())
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

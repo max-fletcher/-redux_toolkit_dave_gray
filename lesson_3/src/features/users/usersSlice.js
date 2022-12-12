@@ -1,13 +1,21 @@
 // A redux state objects is split into multiple state objects. Hence, a slice is a set of reducer logic, state and actions for each feature in the app.
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from 'axios';
 
-const initialState = [
-   {id: '1', name: 'Dave Gray'},
-   {id: '2', name: 'John Simms'},
-   {id: '3', name: 'Matt Hoffman'},
-]
+const USERS_URL = 'https://jsonplaceholder.typicode.com/users'
+
+const initialState = []
+
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async ()=> {
+   try {
+      const response = await axios.get(USERS_URL)
+      return response.data
+   } catch (error) {
+      return error.message
+   }
+})
 
 // contains reducer. 1st params in the name(used to call actions for this slice using the syntax state.?name?.action. In this case, an example is
 // state.counter.increment. However, remember that we can choose to not call it in a component and instead export it from the slice itself with a
@@ -20,6 +28,11 @@ const usersSlice = createSlice({
       // This is a replacement for the lines above. It is how you abstract the logic from inside a component into redux. The 'reducer' callback(where the state is 
       // persisted to store store) will run after 'prepare' callback(where the data is pre-processed before storing).
       
+   },
+   extraReducers(builder){
+      builder.addCase(fetchUsers.fulfilled, (state, action) => {
+         return action.payload
+      })
    }
 })
 

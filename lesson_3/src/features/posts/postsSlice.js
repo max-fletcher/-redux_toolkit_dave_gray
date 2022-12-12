@@ -8,11 +8,27 @@ import axios from 'axios'
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 
+// Redux works synchronously so anything asynchronous in redux must happen its middleware. And the most common approach is a "thunk" middleware.
+// It can be imported and dispatched from a component using the "useDispatch" hook. (See PostList.js for how "fetchPosts" is used.)
 // a createAsyncThunk accepts 2 params. 1st one is a prefix used for the generated action type. The 2nd one is a payload creator callback that will
-// either accept a promise and return some data(tha can be stored in a variable if you like), or reject a promise and return an error
+// either accept a promise and return some data(tha can be stored in a variable if you like), or reject a promise and return an error.
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
    try {
       const response = await axios.get(POSTS_URL)
+      return response.data
+   } catch (error) {
+      return error.message
+   }
+})
+
+// Redux works synchronously so anything asynchronous in redux must happen its middleware. And the most common approach is a "thunk" middleware.
+// It can be imported and dispatched from a component using the "useDispatch" hook.
+// a createAsyncThunk accepts 2 params. 1st one is a prefix used for the generated action type. The 2nd one is a payload creator callback that will
+// either accept a promise and return some data(tha can be stored in a variable if you like), or reject a promise and return an error.
+// This thunk is making a POST request to the POSTS_URL NOT A GET.
+export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost) => {
+   try {
+      const response = await axios.post(POSTS_URL, initialPost)
       return response.data
    } catch (error) {
       return error.message
@@ -86,7 +102,8 @@ const postsSlice = createSlice({
    },
 
    // Sometimes a slice needs to responsd to other actions that were not defined as part of the slice's reducers. This extra reducer will
-   // run in response to other actions that were not defined as part of the slice's reducers.
+   // run in response to other actions that were not defined as part of the slice's reducers(i.e status of an axios request).
+   // The action.payload will contain data that the promise returns.
    extraReducers: (builder) => {
       // the builder parameter is an object that will allow us to define additional case-based reducers that will run in response to the
       // actions defined outside of the slice
@@ -122,7 +139,21 @@ const postsSlice = createSlice({
             state.status = 'failed'
             state.error = action.error.message
          })
+         // For adding new post
+         .addCase(addNewPost.fulfilled, (state, action) => {
+            action.payload.userId = Number(action.payload.userId)
+            action.payload.date = new Date().toISOString()
+            action.payload.reactions = {
+               thumbsUp: 0,
+               hooray: 0,
+               heart: 0,
+               rocket: 0,
+               eyes: 0
+            }
+            console.log(action.payload);
+            state.posts.push(action.payload) // again, immer.js will work to make sure this is not a mutation
 
+         })
 
    }
 })

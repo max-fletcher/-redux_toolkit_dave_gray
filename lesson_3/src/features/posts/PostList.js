@@ -15,8 +15,6 @@ const PostList = () => {
    const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a named state from the slice(in this case
    // 'postsSlice' -> export const selectAllPosts = (state) => state.posts)
 
-   // console.log(posts);
-
    const postStatus = useSelector(getPostsStatus)
    const postError = useSelector(getPostsError)
 
@@ -37,8 +35,8 @@ const PostList = () => {
       content = <p> "Loading..." </p>
    }else if(postStatus === 'succeeded'){
       // console.log('success', posts);
-      // const orderedPosts = posts.slice().sort((a, b) => b.date.localeompare(a.date))
-      content = posts.map((post) => {
+      const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
+      content = orderedPosts.map((post) => {
          return( 
             <PostsExcerpt key={post.id} post={post} /> 
          )})
@@ -46,6 +44,8 @@ const PostList = () => {
       // console.log('failed');
       content = <p> {postError} </p>
    }
+
+   // console.log(posts);
 
    return (
       <section>
