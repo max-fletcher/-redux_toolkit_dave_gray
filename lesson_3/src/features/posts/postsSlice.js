@@ -121,11 +121,11 @@ const postsSlice = createSlice({
             const loadedPosts = action.payload.map((post) => {
                post.date = sub(new Date(), { minutes: min++ }).toISOString()
                post.reactions = {
-                  thumbsUp: 0,
-                  hooray: 0,
-                  heart: 0,
-                  rocket: 0,
-                  eyes: 0
+                  thumbsUp : 0,
+                  wow : 0,
+                  heart : 0,
+                  rocket : 0,
+                  coffee : 0
                }
 
                return post
@@ -144,11 +144,11 @@ const postsSlice = createSlice({
             action.payload.userId = Number(action.payload.userId)
             action.payload.date = new Date().toISOString()
             action.payload.reactions = {
-               thumbsUp: 0,
-               hooray: 0,
-               heart: 0,
-               rocket: 0,
-               eyes: 0
+               thumbsUp : 0,
+               wow : 0,
+               heart : 0,
+               rocket : 0,
+               coffee : 0
             }
             console.log(action.payload);
             state.posts.push(action.payload) // again, immer.js will work to make sure this is not a mutation
