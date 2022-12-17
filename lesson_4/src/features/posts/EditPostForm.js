@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectPostById, updatePost } from "./postsSlice";
+import { selectPostById, updatePost, deletePost } from "./postsSlice";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { selectAllUsers } from "../users/usersSlice";
@@ -8,9 +8,9 @@ import { selectAllUsers } from "../users/usersSlice";
 const EditPostForm = ()=>{
    const { postId } = useParams()
 
-   console.log(postId);
+   // console.log(postId)
 
-   const navigate = useNavigate()
+   const navigate = useNavigate() // bind useNavigate to a variable
 
    const post = useSelector((state) => selectPostById(state, Number(postId)))
    const users = useSelector(selectAllUsers)
@@ -20,11 +20,12 @@ const EditPostForm = ()=>{
    const [userId, setUserId] = useState(post?.userId)
    const [requestStatus, setrequestStatus] = useState('idle')
 
-   const dispatch = useDispatch()
+   const dispatch = useDispatch() // bind dispatch hook to a varaible so we can use it to fire actions that are defined in the slices
 
    const onTitleChanged = e => setTitle(e.target.value)
    const onContentChanged = e => setContent(e.target.value)
-   const onAuthorChanged = e => setUserId(e.target.value)
+   //Needed to convert the user/author id to number or it doesn't show proper author in Postlist and SinglePost
+   const onAuthorChanged = e => setUserId(Number(e.target.value)) 
 
    const canSave = Boolean(title) && Boolean(content) && Boolean(userId) && requestStatus === 'idle'
 
@@ -55,6 +56,30 @@ const EditPostForm = ()=>{
             setrequestStatus('idle') // set local status to 'pending'
          }
       }
+   }
+
+   const onDeletePostClicked = () => {
+         try {
+            setrequestStatus('pending') // set local status to 'pending'
+            // dispatching "deletePost". Inside the reducer action, we are destructuring and sending the id only. Also, redux provides an
+            // unwrap function to the returned promise that either will contain the action payload, or will throw an error, which allows
+            // us to put this functionality in a try-catch block to begin with.
+            dispatch(deletePost({ id: post.id })).unwrap()
+
+            // Reset states to blank
+            setTitle('')
+            setContent('')
+            setUserId('')
+
+            // navigate to home
+            navigate(`/`)
+
+         } catch (error) {
+            console.log('Failed to delete post', error);
+         }
+         finally{
+            setrequestStatus('idle') // set local status to 'pending'
+         }
    }
 
    // return JSX with message "Post Not Found if the post we are trying to update doesn't exist"
@@ -95,6 +120,7 @@ const EditPostForm = ()=>{
             {/* Same as above but disabled property logic abstractd away to a separate variable */}
             {/* <button type="button" onClick={onSavePostClicked} disabled={canSave}>Save Post</button > */}
             <button type="button" onClick={onSavePostClicked} disabled={!canSave}>Update Post</button>
+            <button className="deleteButton" type="button" onClick={onDeletePostClicked}>Delete Post</button>
          </form>
       </section>
    )

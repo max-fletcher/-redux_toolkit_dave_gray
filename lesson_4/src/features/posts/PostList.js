@@ -27,7 +27,7 @@ const PostList = () => {
    // The slice method is needed since it returns a new array, else, it doesn't work. Its because sort() will mutate the data but redux data is 
    // immutable by nature. Since slice() returns a shallow copy, it will only return a reference to all array elements inside the JSON but sorted.
 
-   // console.log(posts);
+   console.log(posts);
 
    let content
    if(postStatus === 'loading'){

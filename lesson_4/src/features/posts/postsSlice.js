@@ -45,6 +45,19 @@ export const updatePost = createAsyncThunk('posts/updatePost', async (initialPos
    }
 })
 
+export const deletePost = createAsyncThunk('posts/deletePost', async (initialPost) => {
+   const { id } = initialPost // picking out only the id from the post data
+   try {
+      const response = await axios.delete(`${POSTS_URL}/${id}`) // The api is already built so that it can delete post data based on id
+      if(response.status === 200){ // Checking status code since JSONplaceholder doesn't provide anything back except an empty object on delete
+         return initialPost // returns the post data if the post is deleted successfully
+      }
+      return `${response?.status}: ${response?.statusText}` // If status code is not 200(i.e success), return the statusText
+   } catch (error) {
+      return error.message
+   }
+})
+
 // ***IMPORTANT using a thunk as initial state value. But now, the posts slice contains 'posts' array inside so you need to access the state with
 // 'state.posts.posts' since it is nested inside 'posts' slice
 const initialState = {
@@ -165,24 +178,37 @@ const postsSlice = createSlice({
          })
          // For updating an existing post
          .addCase(updatePost.fulfilled, (state, action) => {
-
-            console.log(action.payload);
-
+            // console.log(action.payload);
             // If a post with given id is not found. Axios can't catch the error where the response body is empty so we have to manually check it
             if(!action.payload?.id){
                console.log("Update could not be completed.", action.payload);
                return;
             }
-
             // Notice we are not appending any reactions here, since we are destructuring and passing that in the action payload
             // (i.e the reactions object that existed previously). See "onSavePostClicked" function's disaptch of updatePost.
-
             const { id } = action.payload
             action.payload.date = new Date().toISOString()
-            const posts = state.posts.filter(post => post.id !== id) // find all other posts that are not the post we are editing
-            // appending the new post to the old ones
+            const posts = state.posts.filter(post => post.id !== id) // retrieve all other posts except the post we are editing
+            // appending the new post to the old ones except the one we are editing, to make a new posts array
             // again, immer.js will work to make sure this is not a mutation
             state.posts = [...posts, action.payload]
+         })
+         // For deleting an existing post
+         .addCase(deletePost.fulfilled, (state, action) => {
+            // console.log(action.payload);
+            // If a post with given id is not found. Axios can't catch the error where the response body is empty so we have to manually check it
+            if(!action.payload?.id){
+               console.log("Delete could not be completed.", action.payload);
+               return;
+            }
+            // Notice we are not appending any reactions here, since we are destructuring and passing that in the action payload
+            // (i.e the reactions object that existed previously). See "onSavePostClicked" function's disaptch of updatePost.
+            const { id } = action.payload
+            action.payload.date = new Date().toISOString()
+            const posts = state.posts.filter(post => post.id !== id) // retrieve all other posts except the post we are deleting
+            // setting posts equal to the old posts except the one we are deleting
+            // again, immer.js will work to make sure this is not a mutation
+            state.posts = posts
          })
    }
 })

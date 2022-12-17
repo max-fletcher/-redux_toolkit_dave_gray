@@ -6,8 +6,13 @@ import { addNewPost } from "./postsSlice"; // replacing above action 'postAdded'
 import { useDispatch, useSelector } from "react-redux"; // importing dispatch and selector hook to fire actions that are defined in the slices
 import { selectAllUsers } from "../users/usersSlice";
 
+import { useNavigate } from "react-router-dom";
+
 const AddPostForm = () => {
-   const dispatch = useDispatch() // storing dispatch hook in a varaible so we can use it to fire actions that are defined in the slices
+   const dispatch = useDispatch() // bind dispatch hook to a varaible so we can use it to fire actions that are defined in the slices
+
+   const navigate = useNavigate() // bind useNavigate to a variable
+
    const [title, setTitle] = useState('')
    const [content, setContent] = useState('')
    const [userId, setUserId] = useState('')
@@ -68,6 +73,7 @@ const AddPostForm = () => {
             setTitle('')
             setContent('')
             setUserId('')
+            navigate(`/`)
          } catch (error) {
             console.error('Failed to save the post', error);
          }
