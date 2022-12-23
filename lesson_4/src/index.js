@@ -6,12 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import { store } from './app/store';
 import { Provider } from 'react-redux'
 import { fetchUsers } from './features/users/usersSlice'; // importing fetchUsers from usersSlice
+import { fetchPosts } from './features/posts/postsSlice'; // importing fetchUsers from postsSlice. This replaces useeffect in PostList
 
 import { BrowserRouter } from 'react-router-dom';
 
 // triggering the function so that users are fetched when the app loads/mounts. This is a substitute for using the useDispatch()
 // hook inside a component's useEffect.
 store.dispatch(fetchUsers())
+// triggering the function so that users are fetched when the app loads/mounts. This is a substitute for using the useDispatch()
+// hook inside a component's useEffect. This replaces useeffect in PostList since that causes the post in single post to disappear on refresh
+store.dispatch(fetchPosts())
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -41,7 +41,9 @@ export const updatePost = createAsyncThunk('posts/updatePost', async (initialPos
       const response = await axios.put(`${POSTS_URL}/${id}`, initialPost) // The api is already built so that it can edit post data based on id
       return response.data
    } catch (error) {
-      return error.message
+      // console.log(error, error.message, 'from update post');
+      // return error.message
+      return initialPost // only for testing redux
    }
 })
 
