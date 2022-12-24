@@ -12,6 +12,9 @@ const EditPostForm = ()=>{
 
    const navigate = useNavigate() // bind useNavigate to a variable
 
+   // when dispatching a selector that accepts a parameter, then you need to use this syntax. In this syntax, you use a callback
+   // with state as param and dispatch the selector inside the callback with that state and the params you wish to pass in.
+   // Number is because the useParams hook returns a string
    const post = useSelector((state) => selectPostById(state, Number(postId)))
    const users = useSelector(selectAllUsers)
 

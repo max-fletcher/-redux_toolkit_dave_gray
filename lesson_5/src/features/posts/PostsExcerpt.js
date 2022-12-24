@@ -3,11 +3,18 @@ import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
 import { Link } from "react-router-dom";
 
+import { useSelector } from "react-redux";
+import { selectPostById } from "./postsSlice";
+
 // import React from "react"; // one way to memoize data using React, let PostsExcerpt, and React.memo()
 
 // let PostsExcerpt = ({post}) => { // one way to memoize data using React, let PostsExcerpt, and React.memo()
 
-const PostsExcerpt = ({post}) => {
+const PostsExcerpt = ({postId}) => {
+
+   // when dispatching a selector that accepts a parameter, then you need to use this syntax. In this syntax, you use a callback
+   // with state as param and dispatch the selector inside the callback with that state and the params you wish to pass in.
+   const post = useSelector((state) => selectPostById(state, postId))
 
    // console.log(post, 'excerpt');
 

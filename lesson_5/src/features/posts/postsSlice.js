@@ -2,12 +2,18 @@
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
 // ***IMPORTANT also importing createAsyncThunk from redux toolkit. Importing createSelector so that we can return a memoized value for
-// posts
-import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
+// posts. Also importing createEntityAdapter so that we can return normalized values in a way that is considered the usual conventon.
+import { createSlice, createAsyncThunk, createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 import axios from 'axios'
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
+
+// we are using the "createEntityAdapter" hook to memoize posts. We are also using a "sortComparer" function so we can sort the "posts"
+// before we store them in state(which was previously done in "PostList")
+const postsAdapter = createEntityAdapter({
+   sortComparer: (a,b) => b.date.localeCompare(a.date)
+})
 
 // Redux works synchronously so anything asynchronous in redux must happen its middleware. And the most common approach is a "thunk" middleware.
 // It can be imported and dispatched from a component using the "useDispatch" hook. (See PostList.js for how "fetchPosts" is used.)
@@ -63,12 +69,26 @@ export const deletePost = createAsyncThunk('posts/deletePost', async (initialPos
 
 // ***IMPORTANT using a thunk as initial state value. But now, the posts slice contains 'posts' array inside so you need to access the state with
 // 'state.posts.posts' since it is nested inside 'posts' slice
-const initialState = {
-   posts: [], // posts is emty since we haven't hydrated/populated it with data it yet
+// const initialState = {
+//    posts: [], // posts is emty since we haven't hydrated/populated it with data it yet
+//    status: 'idle', // this status can be 'idle', 'loading', 'succeeded' or 'failed'
+//    error: null, // any errors that may have occured during API requests or otherwise
+//    count: 0
+// }
+
+// ***IMPORTANT using a thunk as initial state value. But now, the posts slice contains 'posts' array inside so you need to access the state with
+// 'state.posts.posts' since it is nested inside 'posts' slice
+// Using the "postsAdapter" "getInitialState function to set initial state". We don't need to define an array of objects(in this case
+// "posts: []") for storing the default array/data structure. It is automatically defined. The others("status", "error" and "count")
+// needs to stay though.
+const initialState = postsAdapter.getInitialState({
+   // posts: [], // posts is emty since we haven't hydrated/populated it with data it yet
    status: 'idle', // this status can be 'idle', 'loading', 'succeeded' or 'failed'
    error: null, // any errors that may have occured during API requests or otherwise
    count: 0
-}
+})
+
+
 
 // contains reducer. 1st params in the name(used to call actions for this slice using the syntax state.?name?.action. In this case, an example is
 // state.counter.increment. However, remember that we can choose to not call it in a component and instead export it from the slice itself with a
@@ -121,7 +141,10 @@ const postsSlice = createSlice({
       reactionAdded: {
          reducer(state, action){
             const { postId, reaction } = action.payload
-            const existingPost = state.posts.find((post) => post.id === postId)
+            // const existingPost = state.posts.find((post) => post.id === postId)
+            // The above line was before we used "createEntityAdapter". This is the new syntax for using "postsAdapter.getInitialState".
+            // It gets the specific post whose reaction count we wish to change.
+            const existingPost = state.entities[postId]
             if(existingPost){
                existingPost.reactions[reaction]++
             }
@@ -169,7 +192,11 @@ const postsSlice = createSlice({
 
             // add any fetched data to the posts array inside the state
             // immer.js makes sure it is not a mutation since states inside redux are immutable(look up immutability and its problems in js)
-            state.posts = state.posts.concat(loadedPosts)
+            // state.posts = state.posts.concat(loadedPosts)
+
+            // The above line was before we used "createEntityAdapter". This is the new syntax for using "postsAdapter.getInitialState".
+            // "createEntityAdapter" has its own CRUD methods. This will update the "posts" array when the "fetchPosts" is "fulfilled".
+            postsAdapter.upsertMany(state, loadedPosts)
          })
          .addCase(fetchPosts.rejected, (state, action) => {
             state.status = 'failed'
@@ -187,7 +214,12 @@ const postsSlice = createSlice({
                coffee : 0
             }
             console.log(action.payload);
-            state.posts.push(action.payload) // again, immer.js will work to make sure this is not a mutation
+            // state.posts.push(action.payload) // again, immer.js will work to make sure this is not a mutation
+
+            // The above line was before we used "createEntityAdapter". This is the new syntax for using "postsAdapter.getInitialState".
+            // "createEntityAdapter" has its own CRUD methods. This will add a new "post" to the "posts" array when the "fetchPosts" is
+            // "fulfilled".
+            postsAdapter.addOne(state, action.payload)
          })
          // For updating an existing post
          .addCase(updatePost.fulfilled, (state, action) => {
@@ -201,10 +233,15 @@ const postsSlice = createSlice({
             // (i.e the reactions object that existed previously). See "onSavePostClicked" function's disaptch of updatePost.
             const { id } = action.payload
             action.payload.date = new Date().toISOString()
-            const posts = state.posts.filter(post => post.id !== id) // retrieve all other posts except the post we are editing
+            // const posts = state.posts.filter(post => post.id !== id) // retrieve all other posts except the post we are editing
             // appending the new post to the old ones except the one we are editing, to make a new posts array
             // again, immer.js will work to make sure this is not a mutation
-            state.posts = [...posts, action.payload]
+            // state.posts = [...posts, action.payload]
+
+            // The above line was before we used "createEntityAdapter". This is the new syntax for using "postsAdapter.getInitialState".
+            // "createEntityAdapter" has its own CRUD methods. This will update an existing "post" to the "posts" array when "updatePost" is
+            // "fulfilled".
+            postsAdapter.upsertOne(state, action.payload)
          })
          // For deleting an existing post
          .addCase(deletePost.fulfilled, (state, action) => {
@@ -221,7 +258,12 @@ const postsSlice = createSlice({
             const posts = state.posts.filter(post => post.id !== id) // retrieve all other posts except the post we are deleting
             // setting posts equal to the old posts except the one we are deleting
             // again, immer.js will work to make sure this is not a mutation
-            state.posts = posts
+            // state.posts = posts
+
+            // The above line was before we used "createEntityAdapter". This is the new syntax for using "postsAdapter.getInitialState".
+            // "createEntityAdapter" has its own CRUD methods. This will delete a "post" from "posts" array with matching id when the
+            // "deletePost" is "fulfilled".
+            postsAdapter.removeOne(state, id)
          })
    }
 })
@@ -233,14 +275,23 @@ const postsSlice = createSlice({
 
 // This is to ascertain that 'posts' inside 'state' will be exported. So if the structure of this slice ever changes, we just need to change
 // the export here and everywhere we use this, will grab the right data
-export const selectAllPosts = (state) => state.posts.posts
+// export const selectAllPosts = (state) => state.posts.posts
 export const getPostsStatus = (state) => state.posts.status
 export const getPostsError = (state) => state.posts.error
 export const getCount = (state) => state.posts.count
 
+// commented out "export const selectAllPosts..." and "export const selectPostById..." so that we can use "getSelectors" hook provided by 
+// the "createEntityAdapter" hook. It provides some selectors out of the box that can be aliased by using destructuring.
+export const {
+   selectAll: selectAllPosts, // alias for "selectAll" is "selectAllPosts"
+   selectById: selectPostById, // alias for "selectById" is "selectPostById"
+   selectIds: selectPostIds, // alias for "selectIds" is "selectPostIds"
+   // We do have to pass a selector that returns the posts slice of the state
+} = postsAdapter.getSelectors((state) => state.posts)
+
 // find and return a single post
-export const selectPostById = (state, postId) =>
-   state.posts.posts.find(post => post.id === postId) // returns post that has same postId
+// export const selectPostById = (state, postId) =>
+//    state.posts.posts.find(post => post.id === postId) // returns post that has same postId
 
 // selectPostById doesn't memoize the value returned so anything that causes rerender will cause that function to run again. This function
 // (selectPostByUser) will not do that as it returns memoized values only. The counter component we put inside the header can be used to
