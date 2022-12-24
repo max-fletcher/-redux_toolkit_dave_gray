@@ -3,6 +3,10 @@ import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
 import { Link } from "react-router-dom";
 
+// import React from "react"; // one way to memoize data using React, let PostsExcerpt, and React.memo()
+
+// let PostsExcerpt = ({post}) => { // one way to memoize data using React, let PostsExcerpt, and React.memo()
+
 const PostsExcerpt = ({post}) => {
 
    // console.log(post, 'excerpt');
@@ -20,5 +24,7 @@ const PostsExcerpt = ({post}) => {
       </article>
    )
 }
+
+// PostsExcerpt = React.memo(PostsExcerpt) // one way to memoize data using React, let PostsExcerpt, and React.memo()
 
 export default PostsExcerpt

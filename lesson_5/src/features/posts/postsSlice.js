@@ -1,8 +1,9 @@
 // A redux state objects is split into multiple state objects. Hence, a slice is a set of reducer logic, state and actions for each feature in the app.
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
-// ***IMPORTANT also importing createAsyncThunk from redux toolkit
-import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+// ***IMPORTANT also importing createAsyncThunk from redux toolkit. Importing createSelector so that we can return a memoized value for
+// posts
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 import axios from 'axios'
 
@@ -240,6 +241,25 @@ export const getCount = (state) => state.posts.count
 // find and return a single post
 export const selectPostById = (state, postId) =>
    state.posts.posts.find(post => post.id === postId) // returns post that has same postId
+
+// selectPostById doesn't memoize the value returned so anything that causes rerender will cause that function to run again. This function
+// (selectPostByUser) will not do that as it returns memoized values only. The counter component we put inside the header can be used to
+// demonstrate that. If we click on it and change the counter, by using react devtools "components" panel, it can be seen that the outlet and
+// other components below it(e.g PostList & UserPage) re-renders, even though it shouldn't since neither "posts" nor "user" changed.
+
+// A createSelector will accept one or more input functions as 1st param that contains an array of functions that are dependencies
+// (i.e the values that are returned from these functions are the dependencies) and they provide the input parameters for the 2nd param,
+// which is the called the output function. Hence, the array of dependencies must coincide with the 2nd Param's function params
+// (2 for 2 in this case). So, "selectAllPosts" will provide the dependency for "posts" and "userId" will provide the dependency for "userId".
+// Only if one of these 2 dependencies change, will the "selectPostsByUser" be triggered again(which prevents unnecessary re-renders).
+
+// If we chose to, we could've replaced "selectAllPosts" with "(state) => state.posts.posts", which means the same(i.e if posts
+// inside posts state changes, then "selectPostsByUser" will re-run). Using "selectAllPosts" is just a shortcut since it equals to
+// "(state) => state.posts.posts".
+export const selectPostsByUser = createSelector( // Returns a memoized lost of posts by a single user, unlike "selectPostById". 
+   [selectAllPosts, (state, userId) => userId],
+   (posts, userId) => posts.filter((post) => post.userId === userId)
+)
 
 // we removed the "postAdded" since it was replaced with "fetchPosts". We added  "increaseCount" instead that will increment count.
 export const { increaseCount, reactionAdded } = postsSlice.actions
