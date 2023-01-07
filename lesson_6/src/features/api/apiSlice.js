@@ -37,7 +37,7 @@ export const apiSlice = createApi({
             method: 'PATCH',
             body: todo
          }),
-         invalidatesTags: ['Todos'] // instructing this query to invalidate cache and re-run "getTodos"(since it hasprovidesTags: ['Todos'])
+         invalidatesTags: ['Todos'] // instructing this query to invalidate cache and re-run "getTodos"(since it has providesTags: ['Todos'])
                                     // when this query is run. If any other query has "hasprovidesTags: ['Todos']", they will be re-run too.
       }),
 

@@ -2,7 +2,7 @@
 // E.g a blog may have separate slices for posts, comments and likes/dislikes. We will handle each of the logic of each differently so each have 
 // their own slices.
 // ***IMPORTANT also importing createAsyncThunk from redux toolkit. Importing createSelector so that we can return a memoized value for
-// posts. Also importing createEntityAdapter so that we can return normalized values in a way that is considered the usual conventon.
+// posts. Also importing createEntityAdapter so that we can return normalized values in a way that is considered the usual convention.
 import { createSlice, createAsyncThunk, createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 import axios from 'axios'
@@ -82,7 +82,7 @@ export const deletePost = createAsyncThunk('posts/deletePost', async (initialPos
 // "posts: []") for storing the default array/data structure. It is automatically defined. The others("status", "error" and "count")
 // needs to stay though.
 const initialState = postsAdapter.getInitialState({
-   // posts: [], // posts is emty since we haven't hydrated/populated it with data it yet
+   // posts: [], // posts is empty since we haven't hydrated/populated it with data it yet
    status: 'idle', // this status can be 'idle', 'loading', 'succeeded' or 'failed'
    error: null, // any errors that may have occured during API requests or otherwise
    count: 0
