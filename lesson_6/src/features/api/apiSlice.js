@@ -15,7 +15,7 @@ export const apiSlice = createApi({
    // **IMPORTANT: NOTE THAT "query" AND "mutation" ARE DIFFERENT. "qurey" ONLY FETCHES DATA AND "mutation" ALTERS THE DATA.
    endpoints : (builder)=>({
       getTodos: builder.query({ // get all todos
-         query: () => '/todos',
+         query: () => '/todos', // will become "http://localhost:3500/todos" because it will append the "baseUrl" from "fetchBaseQuery" and hit that URL
          transformResponse: res => res.sort((a,b) => b.id - a.id), // fn to sort all todos by id after fetching and before cacheing
          providesTags: ['Todos'] // telling this query to invalidate cache and re-fetch data(i.e re-run this query) on running mutations
                                  // that has "invalidatesTags: ['Todos']".
@@ -23,8 +23,8 @@ export const apiSlice = createApi({
 
       addTodo: builder.mutation({ // create todo
          query: (todo) => ({
-            url: '/todos',
-            method: 'POST',
+            url: '/todos',    // will become "http://localhost:3500/todos" because it will append the "baseUrl" from "fetchBaseQuery" and hit that URL
+            method: 'POST',   // will HIT "http://localhost:3500/todos" but will send a POST request NOT a GET request
             body: todo
          }),
          invalidatesTags: ['Todos'] // instructing this query to invalidate cache and re-run "getTodos"(since it hasprovidesTags: ['Todos'])
@@ -33,8 +33,8 @@ export const apiSlice = createApi({
 
       updateTodo: builder.mutation({ // update todo
          query: (todo) => ({
-            url: `/todos/${todo.id}`,
-            method: 'PATCH',
+            url: `/todos/${todo.id}`, // will become "http://localhost:3500/todos/id" because it will append the "baseUrl" from "fetchBaseQuery" and hit that URL
+            method: 'PATCH',          // will HIT "http://localhost:3500/todos/id" but will send a PATCH request NOT a GET request
             body: todo
          }),
          invalidatesTags: ['Todos'] // instructing this query to invalidate cache and re-run "getTodos"(since it has providesTags: ['Todos'])
@@ -44,8 +44,8 @@ export const apiSlice = createApi({
       deleteTodo: builder.mutation({ // delete todo
          // using destructuring to get the "id" only since we only need "id" to delete the todo, not the entire todo
          query: ({ id }) => ({
-            url: `/todos/${id}`,
-            method: 'DELETE',
+            url: `/todos/${id}`,  // will become "http://localhost:3500/todos/id" because it will append the "baseUrl" from "fetchBaseQuery" and hit that URL
+            method: 'DELETE',     // will HIT "http://localhost:3500/todos/id" but will send a DELETE request NOT a GET request
             body: id
          }),
          invalidatesTags: ['Todos'] // instructing this query to invalidate cache and re-run "getTodos"(since it hasprovidesTags: ['Todos'])
