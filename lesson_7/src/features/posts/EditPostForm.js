@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectPostById, updatePost, deletePost } from "./postsSlice";
+import { selectPostById, updatePost, deletePost, useUpdatePostMutation, useDeletePostMutation } from "./postsSlice";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { selectAllUsers } from "../users/usersSlice";
@@ -21,28 +21,37 @@ const EditPostForm = ()=>{
    const [title, setTitle] = useState(post?.title)
    const [content, setContent] = useState(post?.body) // remember, that the API is returning "body" as text and not content.
    const [userId, setUserId] = useState(post?.userId)
-   const [requestStatus, setrequestStatus] = useState('idle')
 
-   const dispatch = useDispatch() // bind dispatch hook to a varaible so we can use it to fire actions that are defined in the slices
+   // Replaced useDispatch with the line below for RTK QUERY. We are bringing in addNewPost as well as isLoading from the apiSlice for
+   // conditional rendering
+   const [updatePost, { isLoading }] = useAddNewPostMutation()
+   const [deletePost] = useDeletePostMutation()
 
    const onTitleChanged = e => setTitle(e.target.value)
    const onContentChanged = e => setContent(e.target.value)
    //Needed to convert the user/author id to number or it doesn't show proper author in Postlist and SinglePost
    const onAuthorChanged = e => setUserId(Number(e.target.value)) 
 
-   const canSave = Boolean(title) && Boolean(content) && Boolean(userId) && requestStatus === 'idle'
+   const canSave = Boolean(title) && Boolean(content) && Boolean(userId) && !isLoading
 
-   const onSavePostClicked = () => {
+   const onSavePostClicked = async () => {
 
-      console.log(Boolean(title), Boolean(content), Boolean(userId), requestStatus === 'idle');
+      console.log(Boolean(title), Boolean(content), Boolean(userId), !isLoading);
 
       if(canSave){
          try {
-            setrequestStatus('pending') // set local status to 'pending'
-            // dispatching "updatePost". Inside the reducer action, we are destructuring the variables since before, it was called "content". Now,
-            // its called "body". Also, redux provides an unwrap function to the returned promise that either will contain the action payload, 
+            // REMOVED DUE TO RTK QUERY
+            // setrequestStatus('pending') // set local status to 'pending'
+            // // dispatching "updatePost". Inside the reducer action, we are destructuring the variables since before, it was called "content". Now,
+            // // its called "body". Also, redux provides an unwrap function to the returned promise that either will contain the action payload, 
+            // // or will throw an error, which allows us to put this functionality in a try-catch block to begin with.
+            // dispatch(updatePost({ id: post.id, title, body: content, userId, reactions: post.reactions })).unwrap()
+
+
+            //  Inside the query, we are destructuring the variables since before, it was called "content". Now,
+            // its called "body". Also, redux provides an unwrap function to the returned promise that either will contain the data,
             // or will throw an error, which allows us to put this functionality in a try-catch block to begin with.
-            dispatch(updatePost({ id: post.id, title, body: content, userId, reactions: post.reactions })).unwrap()
+            await updatePost({ id: post.id, title, body: content, userId }).unwrap()
 
             // Reset states to blank
             setTitle('')
@@ -55,19 +64,19 @@ const EditPostForm = ()=>{
          } catch (error) {
             console.log('Failed to save post', error);
          }
-         finally{
-            setrequestStatus('idle') // set local status to 'pending'
-         }
       }
    }
 
-   const onDeletePostClicked = () => {
+   const onDeletePostClicked = async () => {
          try {
-            setrequestStatus('pending') // set local status to 'pending'
-            // dispatching "deletePost". Inside the reducer action, we are destructuring and sending the id only. Also, redux provides an
-            // unwrap function to the returned promise that either will contain the action payload, or will throw an error, which allows
-            // us to put this functionality in a try-catch block to begin with.
-            dispatch(deletePost({ id: post.id })).unwrap()
+            // REMOVED DUE TO RTK QUERY
+            // setrequestStatus('pending') // set local status to 'pending'
+            // // dispatching "deletePost". Inside the reducer action, we are destructuring and sending the id only. Also, redux provides an
+            // // unwrap function to the returned promise that either will contain the action payload, or will throw an error, which allows
+            // // us to put this functionality in a try-catch block to begin with.
+            // dispatch(deletePost({ id: post.id })).unwrap()
+
+            await deletePost({ id: post.id }).unwrap()
 
             // Reset states to blank
             setTitle('')
@@ -79,9 +88,6 @@ const EditPostForm = ()=>{
 
          } catch (error) {
             console.log('Failed to delete post', error);
-         }
-         finally{
-            setrequestStatus('idle') // set local status to 'pending'
          }
    }
 

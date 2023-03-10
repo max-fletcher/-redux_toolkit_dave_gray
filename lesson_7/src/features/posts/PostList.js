@@ -1,7 +1,8 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 // Removed "selectALlPosts" so that we can use "selectPostIds" from "createEntityAdapter"-s "postsAdapter" instead
-import { selectPostIds, getPostsStatus, getPostsError } from "./postsSlice"; // importing a bunch of states
+import { selectPostIds } from "./postsSlice"; // importing a bunch of states
 import PostsExcerpt from "./PostsExcerpt";
+import { useGetPostsQuery } from "./postsSlice";
 
 // abstracting these away into PostsExcerpt
 // import PostAuthor from "./PostAuthor";
@@ -9,7 +10,13 @@ import PostsExcerpt from "./PostsExcerpt";
 // import ReactionButtons from "./ReactionButtons";
 
 const PostList = () => {
-   const dispatch = useDispatch() //initializing useDispatch into a variable so we can use actions with it
+   
+   const {
+      isLoading,
+      isSuccess,
+      isError,
+      error
+   } = useGetPostsQuery()
 
    // const posts = useSelector((state) => state.posts)  //import reducer from store
    // const posts = useSelector(selectAllPosts)  //Another way to import reducer from store provided we exported a named state from the slice
@@ -17,9 +24,8 @@ const PostList = () => {
 
    // Removed above line so that we can use "selectPostIds" from "createEntityAdapter"-s "postsAdapter" instead
    const orderedPostIds = useSelector(selectPostIds)
-
-   const postStatus = useSelector(getPostsStatus)
-   const postError = useSelector(getPostsError)
+   // const postStatus = useSelector(getPostsStatus) // No longer needed for RTK QUERY
+   // const postError = useSelector(getPostsError) // Removed since the error comes from RTKQUERY
 
    // Block below is commented out since we are passing the posts from index.js using dispatch and fetchPosts. You can remove it altogether
    // if you wish though
@@ -36,10 +42,12 @@ const PostList = () => {
    console.log(orderedPostIds);
 
    let content
-   if(postStatus === 'loading'){
+   // if(postStatus === 'loading'){
+   if(isLoading){ //Replaced above line to use RTK QUERY
       // console.log('loading');
       content = <p> "Loading..." </p>
-   }else if(postStatus === 'succeeded'){
+   // }else if(postStatus === 'succeeded'){
+   }else if(isLoading){ //Replaced above line to use RTK QUERY
       // console.log('success', posts);
       // const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
       // content = orderedPosts.map((post) => {
@@ -53,9 +61,11 @@ const PostList = () => {
          return( 
             <PostsExcerpt key={postId} postId={postId} /> 
          )})
-   }else if(postStatus === 'failed') {
+   // }else if(postStatus === 'failed') {
+   }else if(isError){ //Replaced above line to use RTK QUERY
       // console.log('failed');
-      content = <p> {postError} </p>
+      // content = <p> {postError} </p>
+      content = <p> {error} </p> //Replaced above line to use RTK QUERY
    }
 
    // console.log(posts);
