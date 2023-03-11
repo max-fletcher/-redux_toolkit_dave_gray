@@ -59,7 +59,7 @@ const PostList = () => {
       // with "useSelector" hook
       content = orderedPostIds.map((postId) => {
          return( 
-            <PostsExcerpt key={postId} postId={postId} /> 
+            <PostsExcerpt key={postId} postId={postId} />
          )})
    // }else if(postStatus === 'failed') {
    }else if(isError){ //Replaced above line to use RTK QUERY

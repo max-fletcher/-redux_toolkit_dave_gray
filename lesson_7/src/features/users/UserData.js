@@ -1,7 +1,9 @@
 import { useSelector } from "react-redux"
 import { selectUserById } from "./usersSlice"
-import { selectAllPosts, selectPostsByUser } from "../posts/postsSlice"
+// import { selectAllPosts, selectPostsByUser } from "../posts/postsSlice" // REMOVED FOR RTK QUERY
 import { Link, useParams } from "react-router-dom"
+import { useGetPostsByUserIdQuery } from "../posts/postsSlice"  // SELECTOR RTK QUERY
+import PostsExcerpt from "../posts/PostsExcerpt"
 
 const UserData = () => {
 
@@ -25,22 +27,49 @@ const UserData = () => {
    // )
 
    // Replaced above block with block below to return momoized values using "selectPostsByUser" defined inside postsSlice
-   const postsForUser = useSelector((state) => selectPostsByUser(state, Number(userId)))
+   // const postsForUser = useSelector((state) => selectPostsByUser(state, Number(userId)))  // REMOVED FOR RTK QUERY
 
-   const postTitles = postsForUser.map(
-      (post) => {
-         return(
-            <li key={post.id}>
-               <Link to={`/post/${post.id}`}>{post.title}</Link>
-            </li>
-         )
-      }
-   )
+   const {
+      data: postsForUser,
+      isLoading,
+      isSuccess,
+      isError,
+      error
+   } = useGetPostsByUserIdQuery(userId)
+
+   // REMOVED FOR RTK QUERY
+   // const postTitles = postsForUser.map(
+   //    (post) => {
+   //       return(
+   //          <li key={post.id}>
+   //             <Link to={`/post/${post.id}`}>{post.title}</Link>
+   //          </li>
+   //       )
+   //    }
+   // )
+
+   let content;
+   if(isLoading){
+      content = <p> Loading... </p>
+   }
+   else if(isSuccess){
+      const { ids, entities } = postsForUser // destructuring ids and entities to get them separately
+      content = ids.map( id => ( // looping and constructing the content if data is fetched successfully
+         <li key={id}>
+            <Link to={`/posts/${id}`}>{entities[id].title}</Link>
+         </li>
+      ))
+   }
+   else if(isError){
+      content = <p>{error}</p>
+   }
 
    return (
       <section>
          <h2>{user?.name}</h2>
-         <ol>{postTitles}</ol>
+         {/* <ol>{postTitles}</ol> */}
+         {/* ABOVE LINE REMOVED FOR RTK QUERY */}
+         <ol>{content}</ol>
       </section>
    )
 }
