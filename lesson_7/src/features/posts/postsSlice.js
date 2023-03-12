@@ -188,9 +188,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                patchResult.undo()
             }
          },
-         invalidatesTags: (result, error, arg) => [ // arg contains the original post and hence, arg.id is the post id
-            { type: 'Post', id: arg.id }
-         ]
       }),
    })
 })
