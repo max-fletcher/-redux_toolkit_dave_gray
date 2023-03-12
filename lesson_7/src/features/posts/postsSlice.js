@@ -154,7 +154,44 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
          invalidatesTags: (result, error, arg) => [ // arg contains the original post and hence, arg.id is the post id
             { type: 'Post', id: arg.id }
          ]
-      })
+      }),
+      addReaction: builder.mutation({ // Add reaction
+         // hit the '/posts/postId' endpoint with method = PATCH and a body that contains the new reactions
+         // We will be using optimistic update on "reactions" by using the "onQueryStarted" handler.s
+         // We will be incrementing a reaction and pass the reactions object containing all reactions into this query here so it can be used to update the reactions
+         // in the adapter/normalized state.
+         query: ({ postId, reactions }) => ({ // using destructuring to get the postId and reactions and not the entire post object
+            url: `/posts/${postId}`,
+            method: 'PATCH',
+            // In a real application, we'd probably need to base this on user ID somehow so that a user can't do the same reaction more than once
+            body: { reactions }
+         }),
+         // Passing 2 arguments, both of them are objects that contain stuff. 1st param object contains the data that we will update. 
+         // 2nd param object contains dispatch, which is an object that can be used to dispatch a query inside the "extendedApiSlice.util". "queryFulfilled" is a promise that
+         // will be used in the try catch block to gracefully handle failures.
+         async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled }){ // onQueryStarted handler
+            // 'updateQueryData' requires the endpoint name and cache key arguments, so it knows which piece of cache state to update
+            const patchResult = dispatch(
+               // 'extendedApiSlice.util.updateQueryData' takes 3 arguments. 1st is the endpoint to hit/run, 2nd is the cacke-key argument(which we don't need here)
+               // which is used to update cached dataset and the 3rd contains a draft of our data that is modified(hence the name 'draft').
+               // See this: https://redux-toolkit.js.org/rtk-query/usage/manual-cache-updates#recipes and this: https://redux-toolkit.js.org/rtk-query/api/created-api/api-slice-utils#updatequerydata
+               extendedApiSlice.util.updateQueryData('getPosts', undefined, draft => {
+                  // The 'draft' is Immer-wrapped and can be "mutated" like in createSlice
+                  const post = draft.entities[postId] // temporarily storing the data that is being modified in a var called 'post'
+                  if(post){ post.reactions = reactions } // if the draft/post/data exists, then update its reactions(LHS) with the reactions we passed in(RHS) as argument
+               })
+            )
+            try{
+               await queryFulfilled
+            }
+            catch{
+               patchResult.undo()
+            }
+         },
+         invalidatesTags: (result, error, arg) => [ // arg contains the original post and hence, arg.id is the post id
+            { type: 'Post', id: arg.id }
+         ]
+      }),
    })
 })
 

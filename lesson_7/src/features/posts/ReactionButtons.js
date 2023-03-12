@@ -14,12 +14,12 @@ const ReactionButtons = ({post}) => {
 
    // see thi: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
    // to figure out what is being done with the Object.entries. Map is being run on the array of keys and values from that Object.entries result.
-   return( 
+   return(
       Object.entries(reactionEmoji).map(([name, emoji]) => {
          return (
-            <button 
-               key={name} 
-               type="button" 
+            <button
+               key={name}
+               type="button"
                className="reactionButton"
                // Dispatch action that will increment an emoji count using the post's id and the reaction name(to identify it and increment the count)
                onClick={() => {
