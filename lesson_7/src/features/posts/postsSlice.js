@@ -170,6 +170,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
          // 2nd param object contains dispatch, which is an object that can be used to dispatch a query inside the "extendedApiSlice.util". "queryFulfilled" is a promise that
          // will be used in the try catch block to gracefully handle failures.
          async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled }){ // onQueryStarted handler
+            // dispatching/executing some code from inside this handler to do optimistic update
             // 'updateQueryData' requires the endpoint name and cache key arguments, so it knows which piece of cache state to update
             const patchResult = dispatch(
                // 'extendedApiSlice.util.updateQueryData' takes 3 arguments. 1st is the endpoint to hit/run, 2nd is the cacke-key argument(which we don't need here)
