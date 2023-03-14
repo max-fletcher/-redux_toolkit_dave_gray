@@ -203,7 +203,8 @@ export const {
    useGetPostsByUserIdQuery,
    useAddNewPostMutation,
    useUpdatePostMutation,
-   useDeletePostMutation
+   useDeletePostMutation,
+   useAddReactionMutation
 } = extendedApiSlice
 
 

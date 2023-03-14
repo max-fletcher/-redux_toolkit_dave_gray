@@ -1,6 +1,6 @@
 // import { useDispatch } from "react-redux"; // REMOVED FOR RTK QUERY
 import { reactionAdded } from "./postsSlice";
-import { useAddNewPostMutation } from "./postsSlice";
+import { useAddReactionMutation } from "./postsSlice";
 
 const reactionEmoji = {
    thumbsUp: '👍',
@@ -13,7 +13,7 @@ const reactionEmoji = {
 const ReactionButtons = ({post}) => {
    // const dispatch = useDispatch() // REMOVED FOR RTK QUERY
 
-   const [addReaction] =  useAddNewPostMutation()
+   const [addReaction] = useAddReactionMutation()
 
    // see thi: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
    // to figure out what is being done with the Object.entries. Map is being run on the array of keys and values from that Object.entries result.
