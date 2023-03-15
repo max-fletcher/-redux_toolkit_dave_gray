@@ -1,5 +1,5 @@
 // import { useDispatch } from "react-redux"; // REMOVED FOR RTK QUERY
-import { reactionAdded } from "./postsSlice";
+// import { reactionAdded } from "./postsSlice"; // REMOVED FOR RTK QUERY
 import { useAddReactionMutation } from "./postsSlice";
 
 const reactionEmoji = {
