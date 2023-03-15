@@ -47,7 +47,7 @@ const PostList = () => {
       // console.log('loading');
       content = <p> "Loading..." </p>
    // }else if(postStatus === 'succeeded'){
-   }else if(isLoading){ //Replaced above line to use RTK QUERY
+   }else if(isSuccess){ //Replaced above line to use RTK QUERY
       // console.log('success', posts);
       // const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
       // content = orderedPosts.map((post) => {

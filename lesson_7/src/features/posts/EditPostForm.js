@@ -1,21 +1,22 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectPostById, updatePost, deletePost, useUpdatePostMutation, useDeletePostMutation } from "./postsSlice";
+// import { useDispatch, useSelector } from "react-redux"; // REMOVED useDispatch FOR RTK QUERY
+import { useSelector } from "react-redux";
+// import { selectPostById, updatePost, deletePost, useUpdatePostMutation, useDeletePostMtation } from "./postsSlice"; // REMOVED SOME HOOKS FOR RTK QUERY
+import { selectPostById, useUpdatePostMutation, useDeletePostMutation } from "./postsSlice"; // ADDED useAddReactionMutation FOR RTK QUERY
 import { useParams, useNavigate } from "react-router-dom";
 
 import { selectAllUsers } from "../users/usersSlice";
 
 const EditPostForm = ()=>{
    const { postId } = useParams()
-
    // console.log(postId)
-
    const navigate = useNavigate() // bind useNavigate to a variable
 
    // when dispatching a selector that accepts a parameter, then you need to use this syntax. In this syntax, you use a callback
    // with state as param and dispatch the selector inside the callback with that state and the params you wish to pass in.
    // Number is because the useParams hook returns a string
    const post = useSelector((state) => selectPostById(state, Number(postId)))
+   console.log(post);
    const users = useSelector(selectAllUsers)
 
    const [title, setTitle] = useState(post?.title)
@@ -24,7 +25,7 @@ const EditPostForm = ()=>{
 
    // Replaced useDispatch with the line below for RTK QUERY. We are bringing in addNewPost as well as isLoading from the apiSlice for
    // conditional rendering
-   const [updatePost, { isLoading }] = useAddNewPostMutation()
+   const [updatePost, { isLoading }] = useUpdatePostMutation()
    const [deletePost] = useDeletePostMutation()
 
    const onTitleChanged = e => setTitle(e.target.value)
