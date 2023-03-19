@@ -10,7 +10,7 @@ export const apiSlice = createApi({
    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }),
    // Results of an RTK Query gets cached and we need to use this line declare tag names that can be used to invalidate the cache
    // when mutations with these tag names are triggered
-   tagTypes: ['Post'],
+   tagTypes: ['Post', 'User'],
    // very similar to the reducer actions we defined when we were using thunks with reducers
    // **IMPORTANT: NOTE THAT "query" AND "mutation" ARE DIFFERENT. "qurey" ONLY FETCHES DATA AND "mutation" ALTERS THE DATA.
    // FOR EXTENDED RTK QUERY, EVEN THOUGH YOU DEFINE THE ENDPOINTS IN THE SLICE FILES, NOT INCLUDING THIS LINE BELOW WILL THROW AN ERROR

@@ -1,8 +1,17 @@
 import { useSelector } from 'react-redux'
 import { selectAllUsers } from './usersSlice'
 import { Link } from 'react-router-dom'
+// import { useGetUsersQuery } from "./usersSlice";
 
 const UserList = () => {
+
+   // const {
+   //    isLoading,
+   //    isSuccess,
+   //    isError,
+   //    error
+   // } = useGetUsersQuery()
+
    const users = useSelector(selectAllUsers)
 
    const renderedUsers = users.map((user) => {

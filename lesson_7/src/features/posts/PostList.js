@@ -58,7 +58,7 @@ const PostList = () => {
       // Removed above block so that we can use "selectPostIds" from "createEntityAdapter"-s "postsAdapter" instead of "selectAllPosts"
       // with "useSelector" hook
       content = orderedPostIds.map((postId) => {
-         return( 
+         return(
             <PostsExcerpt key={postId} postId={postId} />
          )})
    // }else if(postStatus === 'failed') {

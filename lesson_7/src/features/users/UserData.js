@@ -1,9 +1,10 @@
-import { useSelector } from "react-redux"
-import { selectUserById } from "./usersSlice"
+// import { useSelector } from "react-redux"
+// import { selectUserById } from "./usersSlice"
 // import { selectAllPosts, selectPostsByUser } from "../posts/postsSlice" // REMOVED FOR RTK QUERY
 import { Link, useParams } from "react-router-dom"
 import { useGetPostsByUserIdQuery } from "../posts/postsSlice"  // SELECTOR RTK QUERY
-import PostsExcerpt from "../posts/PostsExcerpt"
+import { useGetUsersQuery } from "./usersSlice"
+// import PostsExcerpt from "../posts/PostsExcerpt"
 
 const UserData = () => {
 
@@ -13,7 +14,7 @@ const UserData = () => {
    // with state as param and dispatch the selector inside the callback with state as 1st param and additional params you wish to pass in.
    // The state contains the current reducer state that comes from that slice. SO for this case, it contains postsSlice's current state.
    // Number is because the useParams hook returns a string
-   const user = useSelector((state) => selectUserById(state, Number(userId)))
+   // const user = useSelector((state) => selectUserById(state, Number(userId))) // REMOVED FOR RTK QUERY
 
    // // returns only posts that have matching userId
    // const postsForUser = useSelector(
@@ -28,6 +29,23 @@ const UserData = () => {
 
    // Replaced above block with block below to return momoized values using "selectPostsByUser" defined inside postsSlice
    // const postsForUser = useSelector((state) => selectPostsByUser(state, Number(userId)))  // REMOVED FOR RTK QUERY
+
+   // Get a sepcific user by using dependency. 
+   // The 2nd parameter for useGetUsersQuery can take a function and return a set of data that will be synced with the object on top.
+   const { user,
+      isLoading: isLoadingUser,
+      isSuccess: isSuccessUser,
+      isError: isErrorUser,
+      error: errorUser
+   } = useGetUsersQuery('getUsers', {
+         selectFromResult: ({ data, isLoading, isSuccess, isError, error }) => ({
+            user: data?.entities[userId],
+            isLoading,
+            isSuccess,
+            isError,
+            error
+         }),
+   })
 
    const {
       data: postsForUser,
@@ -49,19 +67,19 @@ const UserData = () => {
    // )
 
    let content;
-   if(isLoading){
+   if(isLoading || isLoadingUser){
       content = <p> Loading... </p>
    }
-   else if(isSuccess){
+   else if(isSuccess && isSuccessUser){
       const { ids, entities } = postsForUser // destructuring ids and entities to get them separately
       content = ids.map( id => ( // looping and constructing the content if data is fetched successfully
          <li key={id}>
-            <Link to={`/posts/${id}`}>{entities[id].title}</Link>
+            <Link to={`/post/${id}`}>{entities[id].title}</Link>
          </li>
       ))
    }
-   else if(isError){
-      content = <p>{error}</p>
+   else if(isError || isErrorUser){
+      content = <p>{error || errorUser}</p>
    }
 
    return (
