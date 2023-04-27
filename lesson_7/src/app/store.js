@@ -16,5 +16,5 @@ export const store = configureStore({
       // users: usersReducer,
    },
    // This middleware is required for use with RTK QUERY with an "apiSlice". It manages cache lifetimes and expiration info.
-   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware)
+   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(apiSlice.middleware), devtools: false
 })
