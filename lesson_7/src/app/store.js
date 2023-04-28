@@ -4,8 +4,8 @@ import { configureStore } from "@reduxjs/toolkit"
 import { apiSlice } from "../features/api/apiSlice" // Replacing postsReducer with apiSlice from where we will get the 
 // import usersReducer from '../features/users/usersSlice'
 
-
-// the reducer object inside will contain all the reducers we will use
+// the reducer object inside will contain all the reducers we will use. We will wrap the <App /> component with this store
+// so our App can access these store reducers from all places. Else, it will not work.
 export const store = configureStore({
    reducer: {
       // posts: postsReducer,
