@@ -1,5 +1,5 @@
 // ***IMPORTANT Importing createSelector so that we can return a memoized value for users and
-// posts. Also importing createEntityAdapter so that we can return normalized values in a way that is considered the usual conventon.
+// posts. Also importing createEntityAdapter so that we can return normalized values in a way that is considered the usual convention.
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 
